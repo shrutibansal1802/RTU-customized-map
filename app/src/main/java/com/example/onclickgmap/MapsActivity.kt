@@ -1,22 +1,26 @@
 package com.example.onclickgmap
 
+import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
+    companion object {
+        private val MY_PERMISSION_FINE_LOCATION = 101
+    }
 
     private val TAG = MapsActivity::class.java.simpleName
 
@@ -129,6 +133,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Tpnt, 16f))
 
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.isMyLocationEnabled = true
+        }
+        else {//condition for Marshmello and above
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), MY_PERMISSION_FINE_LOCATION)
+            }
+        }
+
+
         setMapStyle(mMap)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            MY_PERMISSION_FINE_LOCATION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {//permission to access location grant
+                if (ActivityCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    mMap.isMyLocationEnabled = true
+                }
+            }
+            //permission to access location denied
+            else {
+                Toast.makeText(applicationContext, "This app requires location permissions to be granted", Toast.LENGTH_LONG).show()
+                finish()
+            }
+        }
     }
 }

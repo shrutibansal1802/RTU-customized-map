@@ -1,5 +1,6 @@
 package com.example.onclickgmap
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Build
@@ -14,6 +15,24 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.Drawable
+import com.google.android.gms.maps.model.BitmapDescriptor
+//import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import androidx.core.content.ContextCompat
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -21,6 +40,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object {
         private val MY_PERMISSION_FINE_LOCATION = 101
     }
+
 
     private val TAG = MapsActivity::class.java.simpleName
 
@@ -54,8 +74,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+
 
 
         val Tpnt = LatLng(25.142090,75.807688)//T point
@@ -76,8 +98,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.addMarker(MarkerOptions().position(Bblock).title("b block- Civil department"))
 
 
+
         val Ablock = LatLng(25.143555,75.806224) // A block
-        mMap.addMarker(MarkerOptions().position(Ablock).title("A block -electrical department"))
+        mMap.addMarker( MarkerOptions().position(Ablock)
+            .title("A block")
+            .icon(bitmapDescriptorFromVector(this,R.drawable.ic_a_block))
+       )
 
         val PNB = LatLng(25.143150,75.807046) // PNB
         mMap.addMarker(MarkerOptions().position(PNB).title("Punjab National Bank"))
@@ -131,6 +157,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val gym  = LatLng(25.139913,75.808180)
         mMap.addMarker(MarkerOptions().position(gym).title("Gymnasium"))
 
+
+
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Tpnt, 16f))
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -142,9 +170,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-
         setMapStyle(mMap)
     }
+
+
+
+    private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
+        return ContextCompat.getDrawable(context, vectorResId)?.run {
+            setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+            val bitmap = Bitmap.createBitmap(intrinsicWidth, intrinsicHeight, Bitmap.Config.ARGB_8888)
+            draw(Canvas(bitmap))
+            BitmapDescriptorFactory.fromBitmap(bitmap)
+        }
+    }
+
+
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

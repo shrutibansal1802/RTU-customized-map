@@ -31,16 +31,24 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.view.View
 import androidx.core.content.ContextCompat
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
+
+    private val cameraPosition: CameraPosition = CameraPosition.Builder()
+        .target(LatLng(25.142090,75.807688))
+        .zoom(17.5f)
+        .bearing(300f)
+        .tilt(80f)
+        .build()
+
     companion object {
         private val MY_PERMISSION_FINE_LOCATION = 101
     }
-
 
     private val TAG = MapsActivity::class.java.simpleName
 
@@ -161,6 +169,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Tpnt, 16f))
 
+
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
+
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.isMyLocationEnabled = true
         }
@@ -203,4 +215,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+
+
+
 }
